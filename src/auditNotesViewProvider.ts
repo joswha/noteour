@@ -1,17 +1,23 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import * as path from 'path';
 import { getOutputPath } from './utils/fileUtils';
 
 export class AuditNotesViewProvider implements vscode.TreeDataProvider<AuditNoteItem> {
   private _onDidChangeTreeData: vscode.EventEmitter<AuditNoteItem | undefined | null | void> = new vscode.EventEmitter<AuditNoteItem | undefined | null | void>();
   readonly onDidChangeTreeData: vscode.Event<AuditNoteItem | undefined | null | void> = this._onDidChangeTreeData.event;
 
-  private progressItem: AuditNoteItem | undefined;
+  private progressItem: AuditNoteItem;
+  private fileExtensionsItem: AuditNoteItem;
 
   constructor() {
     const outputPath = getOutputPath();
     const initialStatus = fs.existsSync(outputPath) ? 'Completed' : 'Idle';
     this.progressItem = new AuditNoteItem(`Progress: ${initialStatus}`, '', vscode.TreeItemCollapsibleState.None);
+    
+    const config = vscode.workspace.getConfiguration('auditNotes');
+    const fileExtensions = config.get('fileExtensions', ['js', 'ts', 'jsx', 'tsx', 'sol']);
+    this.fileExtensionsItem = new AuditNoteItem(`File Extensions: ${fileExtensions.join(', ')}`, 'extension.setFileExtensions', vscode.TreeItemCollapsibleState.None);
   }
 
   refresh(): void {
@@ -26,10 +32,14 @@ export class AuditNotesViewProvider implements vscode.TreeDataProvider<AuditNote
     if (element) {
       return Promise.resolve([]);
     } else {
+      const collectIconPath = path.join(__filename, '..', '..', 'resources', 'collect.svg');
+      const openIconPath = path.join(__filename, '..', '..', 'resources', 'open.svg');
+      
       return Promise.resolve([
-        this.progressItem!,
-        new AuditNoteItem('Collect Notes', 'extension.collectNotes', vscode.TreeItemCollapsibleState.None),
-        new AuditNoteItem('Open Audit Notes', 'extension.openAuditNotes', vscode.TreeItemCollapsibleState.None)
+        this.fileExtensionsItem,
+        this.progressItem,
+        new AuditNoteItem('Collect Notes', 'extension.collectNotes', vscode.TreeItemCollapsibleState.None, 'button', collectIconPath),
+        new AuditNoteItem('Open Audit Notes', 'extension.openAuditNotes', vscode.TreeItemCollapsibleState.None, 'button', openIconPath)
       ]);
     }
   }
@@ -48,13 +58,20 @@ export class AuditNotesViewProvider implements vscode.TreeDataProvider<AuditNote
     this.progressItem!.label = 'Progress: Idle';
     this.refresh();
   }
+
+  updateFileExtensions(extensions: string[]): void {
+    this.fileExtensionsItem.label = `File Extensions: ${extensions.join(', ')}`;
+    this.refresh();
+  }
 }
 
 class AuditNoteItem extends vscode.TreeItem {
   constructor(
     public label: string,
     public readonly commandId: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+    public readonly contextValue?: string,
+    public readonly iconPath?: string | vscode.ThemeIcon
   ) {
     super(label, collapsibleState);
     if (commandId) {
@@ -63,5 +80,7 @@ class AuditNoteItem extends vscode.TreeItem {
         title: this.label
       };
     }
+    this.contextValue = contextValue;
+    this.iconPath = iconPath;
   }
 }

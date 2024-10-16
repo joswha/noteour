@@ -42,6 +42,23 @@
           "name": "Audit Notes"
         }
       ]
+    },
+    "iconThemes": [
+      {
+        "id": "auditNotes",
+        "label": "Audit Notes",
+        "path": "./resources/icons.json"
+      }
+    ],
+    "configuration": {
+      "title": "Audit Notes",
+      "properties": {
+        "auditNotes.fileExtensions": {
+          "type": "array",
+          "default": ["js", "ts", "jsx", "tsx", "sol"],
+          "description": "File extensions to scan for audit notes"
+        }
+      }
     }
   },
   "scripts": {
@@ -62,5 +79,9 @@
     "typescript": "^5.6.2",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1"
-  }
+  },
+  "files": [
+    "out",
+    "resources"
+  ]
 }

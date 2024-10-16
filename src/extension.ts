@@ -11,8 +11,21 @@ export function activate(context: vscode.ExtensionContext) {
 
     let collectNotesDisposable = vscode.commands.registerCommand('extension.collectNotes', () => collectNotes(context, auditNotesViewProvider));
     let openAuditNotesDisposable = vscode.commands.registerCommand('extension.openAuditNotes', () => openAuditNotes(context));
+    let setFileExtensionsDisposable = vscode.commands.registerCommand('extension.setFileExtensions', async () => {
+        const input = await vscode.window.showInputBox({
+            prompt: 'Enter file extensions to scan (comma-separated)',
+            placeHolder: 'js,ts,jsx,tsx,sol'
+        });
 
-    context.subscriptions.push(collectNotesDisposable, openAuditNotesDisposable);
+        if (input) {
+            const extensions = input.split(',').map(ext => ext.trim());
+            const config = vscode.workspace.getConfiguration('auditNotes');
+            await config.update('fileExtensions', extensions, vscode.ConfigurationTarget.Global);
+            auditNotesViewProvider.updateFileExtensions(extensions);
+        }
+    });
+
+    context.subscriptions.push(collectNotesDisposable, openAuditNotesDisposable, setFileExtensionsDisposable);
 }
 
 export function deactivate() {

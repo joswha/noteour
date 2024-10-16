@@ -2,7 +2,7 @@ export interface Note {
     line: number;
     content: string;
     type: 'note' | 'audit' | 'todo';
-    checked?: boolean;
+    checked: boolean;
 }
 
 export interface NotesByFile {

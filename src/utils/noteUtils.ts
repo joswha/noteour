@@ -58,8 +58,8 @@ function parseAuditNotes(content: string): NotesByFile {
                 const note: Note = {
                     line: parseInt(match[2], 10),
                     content: match[4],
-                    type: match[1] ? 'todo' : 'note',
-                    checked: match[1] ? match[1].toLowerCase().includes('x') : undefined
+                    type: 'note', // Default to 'note' type
+                    checked: match[1] ? match[1].toLowerCase().includes('x') : false
                 };
                 notesByFile[currentFile].notes.push(note);
             }
@@ -74,7 +74,7 @@ export async function updateCheckbox(message: any, notesByFile: NotesByFile, out
     const fileData = notesByFile[file];
     if (fileData) {
         const note = fileData.notes.find(n => n.line === line && n.content === content);
-        if (note && note.type === 'todo') {
+        if (note) {
             note.checked = checked;
 
             const updatedMarkdownContent = generateMarkdownContent(notesByFile);

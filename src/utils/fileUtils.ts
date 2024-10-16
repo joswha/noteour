@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
 import { Note, NotesByFile } from '../types';
 
 export async function scanWorkspaceForNotes(
@@ -11,10 +10,13 @@ export async function scanWorkspaceForNotes(
         throw new Error('No workspace folder found');
     }
 
-    const rootPath = workspaceFolders[0].uri.fsPath;
+    const config = vscode.workspace.getConfiguration('auditNotes');
+    const fileExtensions = config.get('fileExtensions', ['js', 'ts', 'jsx', 'tsx', 'sol']);
+    const globPattern = `**/*.{${fileExtensions.join(',')}}`;
+
     const notesByFile: NotesByFile = {};
 
-    const files = await vscode.workspace.findFiles('**/*.{js,ts,jsx,tsx,sol}', '**/node_modules/**');
+    const files = await vscode.workspace.findFiles(globPattern, '**/node_modules/**');
     const totalFiles = files.length;
 
     for (let i = 0; i < files.length; i++) {

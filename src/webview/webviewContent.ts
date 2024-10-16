@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { NotesByFile } from '../types';
 
-function truncateContent(content: string, maxLength: number = 100): string {
+function truncateContent(content: string, maxLength: number = 50): string {
     if (content.length <= maxLength) {
         return content;
     }
@@ -21,21 +21,15 @@ export function getWebviewContent(notesByFile: NotesByFile): string {
             const isChecked = note.checked ? 'checked' : '';
             const truncatedContent = truncateContent(note.content);
             const fullContent = note.content;
+            const strikethrough = note.checked ? 'text-decoration: line-through;' : '';
 
-            if (note.type === 'todo') {
-                content += `
-                    <p>
-                        <input type="checkbox" class="todo-checkbox" data-file="${filePath}" data-line="${note.line}" data-content="${encodeURIComponent(fullContent)}" ${isChecked}>
-                        <a href="#" class="open-file" data-file="${fileUri}" data-line="${note.line}">Line ${note.line}</a>: ${truncatedContent}
-                        <span class="full-content" style="display: none;">${fullContent}</span>
-                    </p>`;
-            } else {
-                content += `
-                    <p>
-                        <a href="#" class="open-file" data-file="${fileUri}" data-line="${note.line}">Line ${note.line}</a>: ${truncatedContent}
-                        <span class="full-content" style="display: none;">${fullContent}</span>
-                    </p>`;
-            }
+            content += `
+                <p>
+                    <input type="checkbox" class="note-checkbox" data-file="${filePath}" data-line="${note.line}" data-content="${encodeURIComponent(fullContent)}" ${isChecked}>
+                    <a href="#" class="open-file" data-file="${fileUri}" data-line="${note.line}" style="${strikethrough}">Line ${note.line}</a>: 
+                    <span style="${strikethrough}">${truncatedContent}</span>
+                    <span class="full-content" style="display: none;">${fullContent}</span>
+                </p>`;
         });
     }
 
@@ -65,7 +59,7 @@ export function getWebviewContent(notesByFile: NotesByFile): string {
                     });
                 });
 
-                document.querySelectorAll('.todo-checkbox').forEach(checkbox => {
+                document.querySelectorAll('.note-checkbox').forEach(checkbox => {
                     checkbox.addEventListener('change', (event) => {
                         const isChecked = event.target.checked;
                         const file = checkbox.getAttribute('data-file');

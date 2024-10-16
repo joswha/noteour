@@ -1,0 +1,11 @@
+{
+  "iconDefinitions": {
+    "collect": {
+      "iconPath": "./collect.svg"
+    },
+    "open": {
+      "iconPath": "./open.svg"
+    }
+  }
+}
+
