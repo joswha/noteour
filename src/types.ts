@@ -1,7 +1,7 @@
 export interface Note {
     line: number;
     content: string;
-    type: 'note' | 'audit' | 'todo';
+    type: string;
     checked: boolean;
 }
 

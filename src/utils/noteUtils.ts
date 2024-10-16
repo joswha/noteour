@@ -27,13 +27,8 @@ export function generateMarkdownContent(notesByFile: NotesByFile): string {
         fileData.notes.forEach(note => {
             const noteContent = note.content;
             const lineLink = `${vscodePath}:${note.line}`;
-    
-            if (note.type === 'todo') {
-                const checkbox = note.checked ? 'x' : ' ';
-                markdownContent += `- [${checkbox}] [Line ${note.line}](${lineLink}): ${noteContent}\n\n`;
-            } else {
-                markdownContent += `- [Line ${note.line}](${lineLink}): ${noteContent}\n\n`;
-            }
+            const checkbox = note.checked ? 'x' : ' ';
+            markdownContent += `- [${checkbox}] [Line ${note.line}](${lineLink}): ${noteContent}\n\n`;
         });
     }
 
@@ -53,13 +48,13 @@ function parseAuditNotes(content: string): NotesByFile {
                 notesByFile[currentFile] = { fileUri: currentFile, notes: [] };
             }
         } else if (line.startsWith('- ')) {
-            const match = line.match(/- (\[[ x]\] )?\[Line (\d+)\]\((.+?)\): (.+)/);
+            const match = line.match(/- \[([x ])\] \[Line (\d+)\]\((.+?)\): (.+)/);
             if (match && currentFile) {
                 const note: Note = {
                     line: parseInt(match[2], 10),
                     content: match[4],
-                    type: 'note', // Default to 'note' type
-                    checked: match[1] ? match[1].toLowerCase().includes('x') : false
+                    type: 'note',
+                    checked: match[1].toLowerCase() === 'x'
                 };
                 notesByFile[currentFile].notes.push(note);
             }

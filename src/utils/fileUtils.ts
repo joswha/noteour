@@ -12,6 +12,8 @@ export async function scanWorkspaceForNotes(
 
     const config = vscode.workspace.getConfiguration('auditNotes');
     const fileExtensions = config.get('fileExtensions', ['js', 'ts', 'jsx', 'tsx', 'sol']);
+    const noteTypes = config.get('noteTypes', ['TODO', '@audit']);
+    const noteTypesRegex = new RegExp(noteTypes.map(type => `\\b${type}\\b`).join('|'), 'i');
     const globPattern = `**/*.{${fileExtensions.join(',')}}`;
 
     const notesByFile: NotesByFile = {};
@@ -28,20 +30,12 @@ export async function scanWorkspaceForNotes(
         const lines = text.split('\n');
 
         lines.forEach((line, index) => {
-            let noteType: Note['type'] | null = null;
-
-            if (/@note|@audit-info|@audit/.test(line)) {
-                noteType = 'note';
-            } else if (/TODO/i.test(line)) {
-                noteType = 'todo';
-            }
-
-            if (noteType) {
+            if (noteTypesRegex.test(line)) {
                 const noteContent = line.trim();
                 const note: Note = {
                     line: index + 1,
                     content: noteContent,
-                    type: noteType,
+                    type: 'note',
                     checked: false
                 };
 

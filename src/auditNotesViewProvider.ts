@@ -9,6 +9,7 @@ export class AuditNotesViewProvider implements vscode.TreeDataProvider<AuditNote
 
   private progressItem: AuditNoteItem;
   private fileExtensionsItem: AuditNoteItem;
+  private noteTypesItem: AuditNoteItem;
 
   constructor() {
     const outputPath = getOutputPath();
@@ -18,6 +19,9 @@ export class AuditNotesViewProvider implements vscode.TreeDataProvider<AuditNote
     const config = vscode.workspace.getConfiguration('auditNotes');
     const fileExtensions = config.get('fileExtensions', ['js', 'ts', 'jsx', 'tsx', 'sol']);
     this.fileExtensionsItem = new AuditNoteItem(`File Extensions: ${fileExtensions.join(', ')}`, 'extension.setFileExtensions', vscode.TreeItemCollapsibleState.None);
+    
+    const noteTypes = config.get('noteTypes', ['TODO', '@audit']);
+    this.noteTypesItem = new AuditNoteItem(`Note Types: ${noteTypes.join(', ')}`, 'extension.setNoteTypes', vscode.TreeItemCollapsibleState.None);
   }
 
   refresh(): void {
@@ -34,12 +38,15 @@ export class AuditNotesViewProvider implements vscode.TreeDataProvider<AuditNote
     } else {
       const collectIconPath = path.join(__filename, '..', '..', 'resources', 'collect.svg');
       const openIconPath = path.join(__filename, '..', '..', 'resources', 'open.svg');
+      const clearIconPath = path.join(__filename, '..', '..', 'resources', 'clear.svg');
       
       return Promise.resolve([
         this.fileExtensionsItem,
+        this.noteTypesItem,
         this.progressItem,
         new AuditNoteItem('Collect Notes', 'extension.collectNotes', vscode.TreeItemCollapsibleState.None, 'button', collectIconPath),
-        new AuditNoteItem('Open Audit Notes', 'extension.openAuditNotes', vscode.TreeItemCollapsibleState.None, 'button', openIconPath)
+        new AuditNoteItem('Open Audit Notes', 'extension.openAuditNotes', vscode.TreeItemCollapsibleState.None, 'button', openIconPath),
+        new AuditNoteItem('Clear Notes', 'extension.clearNotes', vscode.TreeItemCollapsibleState.None, 'button', clearIconPath)
       ]);
     }
   }
@@ -61,6 +68,11 @@ export class AuditNotesViewProvider implements vscode.TreeDataProvider<AuditNote
 
   updateFileExtensions(extensions: string[]): void {
     this.fileExtensionsItem.label = `File Extensions: ${extensions.join(', ')}`;
+    this.refresh();
+  }
+
+  updateNoteTypes(types: string[]): void {
+    this.noteTypesItem.label = `Note Types: ${types.join(', ')}`;
     this.refresh();
   }
 }

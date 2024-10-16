@@ -16,6 +16,7 @@
 - Allows customization of file extensions to scan.
 - Clickable links in both the markdown file and the webview to open files directly at the relevant line.
 - Persistent checkbox states across sessions for all types of notes.
+- Clear collected notes with a single click.
 
 ## Installation
 
@@ -43,6 +44,7 @@ Alternatively, you can install this extension from the source code:
 3. Use the "Collect Notes" button to scan your workspace and collect notes.
 4. Use the "Open Audit Notes" button to view the collected notes in a webview.
 5. Set custom file extensions to scan using the "File Extensions" item in the custom view.
+6. Click the "Clear Notes" button in the custom view to delete all collected audit notes.
 
 ### Custom View
 
@@ -51,6 +53,7 @@ The extension provides a custom view in the Activity Bar with the following feat
 - Progress: Shows the current progress of note collection.
 - Collect Notes: Button to start the note collection process.
 - Open Audit Notes: Button to open the collected notes in a webview.
+- Clear Notes: Button to delete all collected audit notes.
 
 ### Checkboxes
 
