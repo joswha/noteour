@@ -11,16 +11,55 @@
   ],
   "activationEvents": [
     "onStartupFinished",
-    "onCommand:extension.collectNotes"
+    "onCommand:extension.collectNotes",
+    "onCommand:extension.openAuditNotes"
   ],
   "main": "./out/extension.js",
   "contributes": {
-      "commands": [
-          {
-              "command": "extension.collectNotes",
-              "title": "Collect Audit Notes"
-          }
+    "commands": [
+      {
+        "command": "extension.collectNotes",
+        "title": "Collect Audit Notes"
+      },
+      {
+        "command": "extension.openAuditNotes",
+        "title": "Open Audit Notes"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "auditNotesExplorer",
+          "title": "Audit Notes",
+          "icon": "resources/audit-icon.svg"
+        }
       ]
+    },
+    "views": {
+      "auditNotesExplorer": [
+        {
+          "id": "auditNotesView",
+          "name": "Audit Notes"
+        }
+      ]
+    },
+    "iconThemes": [
+      {
+        "id": "auditNotes",
+        "label": "Audit Notes",
+        "path": "./resources/icons.json"
+      }
+    ],
+    "configuration": {
+      "title": "Audit Notes",
+      "properties": {
+        "auditNotes.fileExtensions": {
+          "type": "array",
+          "default": ["js", "ts", "jsx", "tsx", "sol"],
+          "description": "File extensions to scan for audit notes"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -40,5 +79,9 @@
     "typescript": "^5.6.2",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1"
-  }
+  },
+  "files": [
+    "out",
+    "resources"
+  ]
 }
