@@ -11,7 +11,8 @@
   ],
   "activationEvents": [
     "onStartupFinished",
-    "onCommand:extension.collectNotes"
+    "onCommand:extension.collectNotes",
+    "onCommand:extension.openAuditNotes"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -19,6 +20,10 @@
           {
               "command": "extension.collectNotes",
               "title": "Collect Audit Notes"
+          },
+          {
+              "command": "extension.openAuditNotes",
+              "title": "Open Audit Notes"
           }
       ]
   },
