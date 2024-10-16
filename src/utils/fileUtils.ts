@@ -3,7 +3,9 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { Note, NotesByFile } from '../types';
 
-export async function scanWorkspaceForNotes(): Promise<NotesByFile> {
+export async function scanWorkspaceForNotes(
+    progressCallback: (progress: number, total: number) => void
+): Promise<NotesByFile> {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders) {
         throw new Error('No workspace folder found');
@@ -13,7 +15,12 @@ export async function scanWorkspaceForNotes(): Promise<NotesByFile> {
     const notesByFile: NotesByFile = {};
 
     const files = await vscode.workspace.findFiles('**/*.{js,ts,jsx,tsx,sol}', '**/node_modules/**');
-    for (const file of files) {
+    const totalFiles = files.length;
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        progressCallback(i + 1, totalFiles);
+
         const document = await vscode.workspace.openTextDocument(file);
         const text = document.getText();
         const lines = text.split('\n');

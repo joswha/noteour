@@ -16,16 +16,33 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-      "commands": [
-          {
-              "command": "extension.collectNotes",
-              "title": "Collect Audit Notes"
-          },
-          {
-              "command": "extension.openAuditNotes",
-              "title": "Open Audit Notes"
-          }
+    "commands": [
+      {
+        "command": "extension.collectNotes",
+        "title": "Collect Audit Notes"
+      },
+      {
+        "command": "extension.openAuditNotes",
+        "title": "Open Audit Notes"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "auditNotesExplorer",
+          "title": "Audit Notes",
+          "icon": "resources/audit-icon.svg"
+        }
       ]
+    },
+    "views": {
+      "auditNotesExplorer": [
+        {
+          "id": "auditNotesView",
+          "name": "Audit Notes"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

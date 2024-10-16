@@ -1,6 +1,13 @@
 import * as path from 'path';
 import { NotesByFile } from '../types';
 
+function truncateContent(content: string, maxLength: number = 100): string {
+    if (content.length <= maxLength) {
+        return content;
+    }
+    return content.slice(0, maxLength) + '...';
+}
+
 export function getWebviewContent(notesByFile: NotesByFile): string {
     let content = '<h1>Audit Notes</h1>';
 
@@ -12,18 +19,21 @@ export function getWebviewContent(notesByFile: NotesByFile): string {
 
         fileData.notes.forEach(note => {
             const isChecked = note.checked ? 'checked' : '';
-            const noteContent = note.content;
+            const truncatedContent = truncateContent(note.content);
+            const fullContent = note.content;
 
             if (note.type === 'todo') {
                 content += `
                     <p>
-                        <input type="checkbox" class="todo-checkbox" data-file="${filePath}" data-line="${note.line}" data-content="${encodeURIComponent(noteContent)}" ${isChecked}>
-                        <a href="#" class="open-file" data-file="${fileUri}" data-line="${note.line}">Line ${note.line}</a>: ${noteContent}
+                        <input type="checkbox" class="todo-checkbox" data-file="${filePath}" data-line="${note.line}" data-content="${encodeURIComponent(fullContent)}" ${isChecked}>
+                        <a href="#" class="open-file" data-file="${fileUri}" data-line="${note.line}">Line ${note.line}</a>: ${truncatedContent}
+                        <span class="full-content" style="display: none;">${fullContent}</span>
                     </p>`;
             } else {
                 content += `
                     <p>
-                        <a href="#" class="open-file" data-file="${fileUri}" data-line="${note.line}">Line ${note.line}</a>: ${noteContent}
+                        <a href="#" class="open-file" data-file="${fileUri}" data-line="${note.line}">Line ${note.line}</a>: ${truncatedContent}
+                        <span class="full-content" style="display: none;">${fullContent}</span>
                     </p>`;
             }
         });
