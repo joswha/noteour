@@ -29,7 +29,7 @@ Alternatively, you can install this extension from the source code:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/collect-audit-notes.git
+   git clone https://github.com/joswha/noteour.git
    ```
 2. Open the folder in VSCode:
    ```bash
@@ -50,7 +50,7 @@ Alternatively, you can install this extension from the source code:
 
 The extension provides a custom view in the Activity Bar with the following features:
 - File Extensions: Displays current file extensions being scanned. Click to modify.
-- Progress: Shows the current progress of note collection.
+- Status: Shows the current status of note collection.
 - Collect Notes: Button to start the note collection process.
 - Open Audit Notes: Button to open the collected notes in a webview.
 - Clear Notes: Button to delete all collected audit notes.

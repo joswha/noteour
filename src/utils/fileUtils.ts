@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Note, NotesByFile } from '../types';
 
 export async function scanWorkspaceForNotes(
-    progressCallback: (progress: number, total: number) => void
+    statusCallback: (status: number, total: number) => void
 ): Promise<NotesByFile> {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders) {
@@ -13,7 +13,11 @@ export async function scanWorkspaceForNotes(
     const config = vscode.workspace.getConfiguration('auditNotes');
     const fileExtensions = config.get('fileExtensions', ['js', 'ts', 'jsx', 'tsx', 'sol']);
     const noteTypes = config.get('noteTypes', ['TODO', '@audit']);
-    const noteTypesRegex = new RegExp(noteTypes.map(type => `\\b${type}\\b`).join('|'), 'i');
+    
+    // Escape special characters in note types and create a regex pattern
+    const noteTypesPattern = noteTypes.map(type => type.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    const noteTypesRegex = new RegExp(`(${noteTypesPattern})`, 'i');
+    
     const globPattern = `**/*.{${fileExtensions.join(',')}}`;
 
     const notesByFile: NotesByFile = {};
@@ -23,30 +27,48 @@ export async function scanWorkspaceForNotes(
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        progressCallback(i + 1, totalFiles);
+        statusCallback(i + 1, totalFiles);
 
         const document = await vscode.workspace.openTextDocument(file);
         const text = document.getText();
         const lines = text.split('\n');
 
+        let inBlockComment = false;
+
         lines.forEach((line, index) => {
-            if (noteTypesRegex.test(line)) {
-                const noteContent = line.trim();
-                const note: Note = {
-                    line: index + 1,
-                    content: noteContent,
-                    type: 'note',
-                    checked: false
-                };
+            const trimmedLine = line.trim();
 
-                const filePath = file.fsPath;
-                const fileUri = vscode.Uri.file(filePath).toString();
+            // Check for block comment start
+            if (trimmedLine.startsWith('/*')) {
+                inBlockComment = true;
+            }
 
-                if (!notesByFile[filePath]) {
-                    notesByFile[filePath] = { fileUri, notes: [] };
+            // Check if we're in a comment (block or line)
+            if (inBlockComment || trimmedLine.startsWith('//')) {
+                if (noteTypesRegex.test(trimmedLine)) {
+                    // Extract the note content, removing comment symbols
+                    const noteContent = trimmedLine.replace(/^\/\*+|\*+\/|\/\/|\*/g, '').trim();
+                    const note: Note = {
+                        line: index + 1,
+                        content: noteContent,
+                        type: 'note',
+                        checked: false
+                    };
+
+                    const filePath = file.fsPath;
+                    const fileUri = vscode.Uri.file(filePath).toString();
+
+                    if (!notesByFile[filePath]) {
+                        notesByFile[filePath] = { fileUri, notes: [] };
+                    }
+
+                    notesByFile[filePath].notes.push(note);
                 }
+            }
 
-                notesByFile[filePath].notes.push(note);
+            // Check for block comment end
+            if (trimmedLine.endsWith('*/')) {
+                inBlockComment = false;
             }
         });
     }

@@ -2,7 +2,7 @@
   "name": "noteour",
   "displayName": "noteour",
   "description": "Collect and view the notes in your code.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "joswha",
   "repository": {
     "type": "git",
@@ -24,15 +24,23 @@
     "commands": [
       {
         "command": "extension.collectNotes",
-        "title": "Collect Audit Notes"
+        "title": "Noteour: Collect Audit Notes"
       }, 
       {
         "command": "extension.openAuditNotes",
-        "title": "Open Audit Notes"
+        "title": "Noteour: Open Audit Notes"
       },
       {
         "command": "extension.clearNotes",
-        "title": "Clear Audit Notes"
+        "title": "Noteour: Clear Audit Notes"
+      },
+      {
+        "command": "extension.setFileExtensions",
+        "title": "Noteour: Set File Extensions to Scan"
+      },
+      {
+        "command": "extension.setNoteTypes",
+        "title": "Noteour: Set Note Types to Search"
       }
     ],
     "viewsContainers": {
@@ -73,7 +81,10 @@
           "description": "Types of notes to search for (case insensitive)"
         }
       }
-    }
+    },
+    "css": [
+      "./resources/auditNotes.css"
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

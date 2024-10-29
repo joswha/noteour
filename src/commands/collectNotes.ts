@@ -1,31 +1,38 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import { scanWorkspaceForNotes, getOutputPath } from '../utils/fileUtils';
-import { saveNotesToFile, loadNotesFromFile } from '../utils/noteUtils';
+import { saveNotesToFile } from '../utils/noteUtils';
 import { showNotesInWebview } from '../webview/webviewProvider';
 import { handleError } from '../utils/errorUtils';
 import { AuditNotesViewProvider } from '../auditNotesViewProvider';
 
-export async function collectNotes(context: vscode.ExtensionContext, auditNotesViewProvider: AuditNotesViewProvider) {
+export async function collectNotes(context: vscode.ExtensionContext, auditNotesViewProvider: AuditNotesViewProvider, currentPanel: vscode.WebviewPanel | undefined): Promise<vscode.WebviewPanel | undefined> {
     const outputPath = getOutputPath();
     
-    if (fs.existsSync(outputPath)) {
-        auditNotesViewProvider.setCompleted();
-        const notesByFile = await loadNotesFromFile();
-        await showNotesInWebview(context, notesByFile, outputPath);
-        return;
-    }
-
     try {
-        auditNotesViewProvider.resetProgress();
-        const notesByFile = await scanWorkspaceForNotes((progress, total) => {
-            auditNotesViewProvider.updateProgress(progress, total);
+        auditNotesViewProvider.resetStatus();
+        const notesByFile = await scanWorkspaceForNotes((status, total) => {
+            auditNotesViewProvider.updateStatus(status, total);
         });
-        await saveNotesToFile(notesByFile);
-        await showNotesInWebview(context, notesByFile, outputPath);
-        auditNotesViewProvider.setCompleted();
+
+        const notesFound = Object.keys(notesByFile).length > 0;
+
+        if (notesFound) {
+            await saveNotesToFile(notesByFile);
+            currentPanel = await showNotesInWebview(context, notesByFile, outputPath, currentPanel);
+        }
+
+        auditNotesViewProvider.setCompleted(notesFound);
+
+        if (notesFound) {
+            vscode.window.showInformationMessage('Notes collection completed.');
+        } else {
+            vscode.window.showInformationMessage('No notes found in the workspace.');
+        }
+
+        return currentPanel;
     } catch (error) {
         handleError('Error collecting notes', error);
-        auditNotesViewProvider.resetProgress();
+        auditNotesViewProvider.resetStatus();
+        return undefined;
     }
 }

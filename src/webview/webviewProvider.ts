@@ -3,25 +3,42 @@ import { getWebviewContent } from './webviewContent';
 import { updateCheckbox, openFile } from '../utils/noteUtils';
 import { NotesByFile } from '../types';
 
+let currentPanel: vscode.WebviewPanel | undefined = undefined;
+
 export async function showNotesInWebview(
     context: vscode.ExtensionContext,
     notesByFile: NotesByFile,
-    outputPath: string
-) {
-    const panel = vscode.window.createWebviewPanel(
+    outputPath: string,
+    currentPanel: vscode.WebviewPanel | undefined
+): Promise<vscode.WebviewPanel> {
+    if (currentPanel) {
+        currentPanel.dispose();
+    }
+
+    currentPanel = vscode.window.createWebviewPanel(
         'auditNotes',
         'Audit Notes',
         vscode.ViewColumn.Beside,
         { enableScripts: true }
     );
 
-    panel.webview.html = getWebviewContent(notesByFile);
+    currentPanel.webview.html = getWebviewContent(notesByFile);
 
-    panel.webview.onDidReceiveMessage(
-        message => handleWebviewMessage(message, notesByFile, outputPath, panel),
+    currentPanel.webview.onDidReceiveMessage(
+        message => handleWebviewMessage(message, notesByFile, outputPath, currentPanel!),
         undefined,
         context.subscriptions
     );
+
+    currentPanel.onDidDispose(
+        () => {
+            currentPanel = undefined;
+        },
+        null,
+        context.subscriptions
+    );
+
+    return currentPanel;
 }
 
 async function handleWebviewMessage(
