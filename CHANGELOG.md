@@ -14,3 +14,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   - Updated core functionality to support special charecters in note type, such as '@', etc.
 - Updated the naming of CMD+SHIFT+P(CTRL+SHIFT+P) commands to be more descriptive.
 - Updated the core functionality to-collect audit notes upon each file extension or note-type change.
+
+## [0.0.3]
+
+- Added logo to the extension.
