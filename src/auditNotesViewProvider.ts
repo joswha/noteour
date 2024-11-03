@@ -8,13 +8,11 @@ export class AuditNoteItem extends vscode.TreeItem {
     public label: string,
     public value: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly contextValue?: string,
-    public readonly iconPath?: string | vscode.ThemeIcon
+    public readonly contextValue?: string
   ) {
     super(label, collapsibleState);
     this.description = value;
     this.contextValue = contextValue;
-    this.iconPath = iconPath;
     if (contextValue === 'editable') {
       this.command = {
         command: 'auditNotes.editValue',
@@ -76,17 +74,13 @@ export class AuditNotesViewProvider implements vscode.TreeDataProvider<AuditNote
     if (element) {
       return Promise.resolve([]);
     } else {
-      const collectIconPath = path.join(__filename, '..', '..', 'resources', 'collect.svg');
-      const openIconPath = path.join(__filename, '..', '..', 'resources', 'open.svg');
-      const clearIconPath = path.join(__filename, '..', '..', 'resources', 'clear.svg');
-      
       return Promise.resolve([
         this.fileExtensionsItem,
         this.noteTypesItem,
         this.statusItem,
-        new AuditNoteItem('Collect Notes', '', vscode.TreeItemCollapsibleState.None, 'button', collectIconPath),
-        new AuditNoteItem('Open Audit Notes', '', vscode.TreeItemCollapsibleState.None, 'button', openIconPath),
-        new AuditNoteItem('Clear Notes', '', vscode.TreeItemCollapsibleState.None, 'button', clearIconPath)
+        new AuditNoteItem('Collect Notes', '', vscode.TreeItemCollapsibleState.None, 'button'),
+        new AuditNoteItem('Open Audit Notes', '', vscode.TreeItemCollapsibleState.None, 'button'),
+        new AuditNoteItem('Clear Notes', '', vscode.TreeItemCollapsibleState.None, 'button')
       ]);
     }
   }
