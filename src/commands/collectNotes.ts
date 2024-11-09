@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import { scanWorkspaceForNotes, getOutputPath } from '../utils/fileUtils';
-import { saveNotesToFile } from '../utils/noteUtils';
+import { saveNotesToFile, loadNotesFromFile, mergeNotes } from '../utils/noteUtils';
 import { showNotesInWebview } from '../webview/webviewProvider';
 import { handleError } from '../utils/errorUtils';
 import { AuditNotesViewProvider } from '../auditNotesViewProvider';
@@ -10,15 +11,26 @@ export async function collectNotes(context: vscode.ExtensionContext, auditNotesV
     
     try {
         auditNotesViewProvider.resetStatus();
-        const notesByFile = await scanWorkspaceForNotes((status, total) => {
+
+        // Load existing notes with checked states
+        let existingNotesByFile = {};
+        if (fs.existsSync(outputPath)) {
+            existingNotesByFile = await loadNotesFromFile();
+        }
+
+        // Scan for new notes
+        const newNotesByFile = await scanWorkspaceForNotes((status, total) => {
             auditNotesViewProvider.updateStatus(status, total);
         });
 
-        const notesFound = Object.keys(notesByFile).length > 0;
+        // Merge new notes with existing notes
+        const combinedNotesByFile = mergeNotes(existingNotesByFile, newNotesByFile);
+
+        const notesFound = Object.keys(combinedNotesByFile).length > 0;
 
         if (notesFound) {
-            await saveNotesToFile(notesByFile);
-            currentPanel = await showNotesInWebview(context, notesByFile, outputPath, currentPanel);
+            await saveNotesToFile(combinedNotesByFile);
+            currentPanel = await showNotesInWebview(context, combinedNotesByFile, outputPath, currentPanel);
         }
 
         auditNotesViewProvider.setCompleted(notesFound);

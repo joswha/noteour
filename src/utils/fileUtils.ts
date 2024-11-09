@@ -55,8 +55,8 @@ export async function scanWorkspaceForNotes(
                         checked: false
                     };
 
+                    const fileUri = file.toString();
                     const filePath = file.fsPath;
-                    const fileUri = vscode.Uri.file(filePath).toString();
 
                     if (!notesByFile[filePath]) {
                         notesByFile[filePath] = { fileUri, notes: [] };
