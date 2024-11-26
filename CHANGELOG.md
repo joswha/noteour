@@ -4,6 +4,11 @@ All notable changes to the "noteour" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.0.5]
+
+- Made settings configurable from CMD+, rather than through the UI.
+- Fixed minor bugs where '@audit' was not detected due to regex limitations.
+
 ## [0.0.4]
 
 - Fixed an issue where the extension was changing file icons unexpectedly by removing the `iconThemes` contribution from `package.json`.
