@@ -5,15 +5,15 @@ import { Note, NotesByFile } from '../types';
 export async function scanWorkspaceForNotes(
     statusCallback: (status: number, total: number) => void
 ): Promise<NotesByFile> {
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders) {
-        throw new Error('No workspace folder found');
-    }
-
-    const config = vscode.workspace.getConfiguration('auditNotes');
-    const fileExtensions = config.get('fileExtensions', ['js', 'ts', 'jsx', 'tsx', 'sol']);
-    const noteTypes = config.get('noteTypes', ['TODO', '@audit']);
+    const config = vscode.workspace.getConfiguration('noteour');
     
+    // Get comma-separated strings and convert to arrays
+    const fileExtStr = config.get<string>('fileExtensions', 'sol');
+    const noteTypesStr = config.get<string>('noteTypes', 'TODO,@audit');
+
+    const fileExtensions = fileExtStr.split(',').map(ext => ext.trim()).filter(Boolean);
+    const noteTypes = noteTypesStr.split(',').map(type => type.trim()).filter(Boolean);
+
     // Escape special characters in note types and create a regex pattern
     const noteTypesPattern = noteTypes.map(type => type.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
     const noteTypesRegex = new RegExp(`(${noteTypesPattern})`, 'i');
@@ -21,6 +21,11 @@ export async function scanWorkspaceForNotes(
     const globPattern = `**/*.{${fileExtensions.join(',')}}`;
 
     const notesByFile: NotesByFile = {};
+
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders) {
+        throw new Error('No workspace folder found');
+    }
 
     const files = await vscode.workspace.findFiles(globPattern, '**/node_modules/**');
     const totalFiles = files.length;

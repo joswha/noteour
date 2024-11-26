@@ -64,13 +64,38 @@ The extension provides a custom view in the Activity Bar with the following feat
 
 ## Configuration
 
-The extension allows you to customize which file extensions to scan. By default, it scans:
-- `.js`, `.ts`, `.jsx`, `.tsx`, and `.sol` files.
-- It ignores files in the `node_modules/` folder.
+Customize file extensions and note types through VS Code settings:
 
-To change the file extensions:
-1. Click on the "File Extensions" item in the custom view.
-2. Enter the desired file extensions when prompted (comma-separated).
+1. Open Settings:
+   - **macOS**: `Cmd + ,`
+   - **Windows/Linux**: `Ctrl + ,`
+2. Search for "noteour"
+3. Configure the following settings:
+
+- **File Extensions** (`noteour.fileExtensions`):
+  - Default: `sol`
+  - Description: Comma-separated list of file extensions to scan (e.g. `js,ts,jsx,tsx,sol`)
+  - Example: `sol,ts,js`
+
+- **Note Types** (`noteour.noteTypes`):
+  - Default: `TODO,@audit`
+  - Description: Comma-separated list of note types to search for (e.g. `TODO,@audit,@note`)
+  - Example: `TODO,@audit,@note,@audit-info`
+
+Changes to these settings will automatically trigger a new note collection.
+
+### Custom View
+
+The extension provides a custom view in the Activity Bar with the following features:
+- Status: Shows the current status of note collection
+- Collect Notes: Button to start the note collection process
+- Open Audit Notes: Button to open the collected notes in a webview
+- Clear Notes: Button to delete all collected audit notes
+
+### Notes About Files
+
+- By default scans `.sol` files
+- Ignores files in the `node_modules/` folder
 
 ## Development
 

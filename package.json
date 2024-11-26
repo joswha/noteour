@@ -1,8 +1,8 @@
 {
   "name": "noteour",
-  "displayName": "noteour",
+  "displayName": "Noteour",
   "description": "Collect and view the notes in your code.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "joswha",
   "icon": "resources/logo.png",
   "repository": {
@@ -34,21 +34,13 @@
       {
         "command": "extension.clearNotes",
         "title": "Noteour: Clear Audit Notes"
-      },
-      {
-        "command": "extension.setFileExtensions",
-        "title": "Noteour: Set File Extensions to Scan"
-      },
-      {
-        "command": "extension.setNoteTypes",
-        "title": "Noteour: Set Note Types to Search"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "auditNotesExplorer",
-          "title": "Audit Notes",
+          "title": "Noteour",
           "icon": "resources/audit-icon.svg"
         }
       ]
@@ -57,22 +49,22 @@
       "auditNotesExplorer": [
         {
           "id": "auditNotesView",
-          "name": "Audit Notes"
+          "name": "Noteour"
         }
       ]
     },
     "configuration": {
-      "title": "Audit Notes",
+      "title": "Noteour",
       "properties": {
-        "auditNotes.fileExtensions": {
-          "type": "array",
-          "default": ["js", "ts", "jsx", "tsx", "sol"],
-          "description": "File extensions to scan for audit notes"
+        "noteour.fileExtensions": {
+          "type": "string",
+          "default": "sol",
+          "description": "Comma-separated list of file extensions to scan (e.g. 'js,ts,jsx,tsx')"
         },
-        "auditNotes.noteTypes": {
-          "type": "array",
-          "default": ["TODO", "@audit"],
-          "description": "Types of notes to search for (case insensitive)"
+        "noteour.noteTypes": {
+          "type": "string", 
+          "default": "TODO,@audit",
+          "description": "Comma-separated list of note types to search for (e.g. 'TODO,@audit,@note')"
         }
       }
     },
